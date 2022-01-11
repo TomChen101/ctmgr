@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+option go_package="./;cs";
+package cs;
+/*容器实例管理 
+*/
+service ContainerInstanceMgr {
+	rpc Execute(BaseMsg) returns (BaseResponseMsg){}
+}
+enum Command{
+	C2S_CREATE_CONTAINER_CMD = 0;//创建容器cmd 
+	S2C_CREATE_CONTAINER_CMD = 1;
+	C2S_STOP_CONTAINER_CMD  = 2;//关闭容器cmd
+	S2C_STOP_CONTAINER_CMD  = 3;
+	C2S_RESTART_CONTAINER_CMD = 4;//重新启动容器cmd 
+	S2C_RESTART_CONTAINER_CMD = 5;
+	C2S_REMOVE_CONTAINER_CMD = 6;//移除容器实例
+	S2C_REMOVE_CONTAINER_CMD = 7;
+}
+enum RET {
+	RET_OK = 0;//返回码正常 
+	RET_ERROR = 1;//返回码异常
+	RET_CONTAINER_IS_EXIST = 2;//容器实例存在 
+	RET_START_CONTAINER_FAILD = 3;//启动容器实例失败
+	RET_STOP_CONTAINER_FAILD = 4;//关闭容器实例失败
+	RET_RESTART_CONTAINER_FAILD = 5;//重启容器实例失败
+	RET_REMOVE_CONTAINER_FAILD = 6;//移除容器实例失败
+}
+//基础消息结构 
+message BaseMsg {
+	uint32  cmd = 1;
+	bytes   datas = 2;
+}
+//基础回报消息 
+message BaseResponseMsg {
+	uint32 cmd  = 1;
+	uint32 ret  = 2; 
+	bytes body = 3;
+}
+//容器启动参数 
+message C2S_CreateContainer {
+	uint64 memory_limit = 1;//内存限制
+	uint32 cpu_core_limit = 2;//cpu限制 
+	string image = 3;//启动镜像
+	string image_name = 4;//启动容器名
+	//TODO
+}
+message S2C_CreateContainer {
+	string container_id = 1;//启动容器实例id 
+	uint64 memory_limit = 2;
+ 	uint32 cpu_core_limit = 3;
+	string image = 4;
+	string image_name = 5;
+}
+//关闭容器 
+message C2S_StopContainer {
+	string image_name = 1;//关闭容器名称
+}
+message S2C_StopContainer {
+	string image_name = 1;
+	string container_id =2;
+}
+//重新启动容器 
+message C2S_RestartContainer {
+	string image_name = 1; //启动容器名称 
+}
+message S2C_RestartContainer {
+	string image_name = 1;
+}
+//移除容器实例 
+message C2S_RemoveContainer {
+	string image_name = 1;//容器名称 
+}
+message S2C_RemoveContainer {
+	string image_name = 1; 
+}
